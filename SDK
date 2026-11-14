@@ -1,0 +1,107 @@
+https://doc.kickpi.cn/Products/SDK-Compilation/A733/Linux_SDK/
+SDK（Software Development Kit，软件开发工具包）是一套为特定软件框架、硬件平台或操作系统提供的开发工具集合，旨在帮助开发者更高效地创建应用程序。
+
+编译环境配置
+在 PC 上安装 Ubuntu22.04，进行 SDK 编译。 
+<<-- WSL  ，我使用獨立安裝的Linux ，安裝SDK，但目錄與說明不一樣，WSL可以
+
+
+硬件：PC满足 RAM ≥ 16 GB，CPU core ≥ 4，Hard Drive ≥ 500GB
+软件：Ubuntu22.04，虚拟机磁盘空间分配 ≥ 200GB
+
+配置安装：
+
+Tip
+
+安装依赖出现错误时，根据报错信息查找对应的依赖包。
+
+
+sudo apt-get update
+sudo apt install autoconf bc binfmt-support bison build-essential bzip2
+sudo apt install chrpath cmake cpp-aarch64-linux-gnu curl device-tree-compiler diffstat
+sudo apt install expat expect expect-dev fakeroot flex
+sudo apt install g++ g++-multilib gawk gcc gcc-multilib git gnupg gperf gpgv2 imagemagick
+sudo apt install lib32ncurses5-dev lib32readline-dev lib32z1-dev libgmp-dev 
+sudo apt install libgucharmap-2-90-dev liblz4-tool libmpc-dev
+sudo apt install libncurses5-dev libsdl1.2-dev libssl-dev libwxgtk3.0-gtk3-dev 
+sudo apt install libxml2 libxml2-utils live-build lzop
+sudo apt install make module-assistant ncurses-dev openjdk-8-jdk 
+sudo apt install patchelf pngcrush python2 python-is-python3 python-pip
+sudo apt install qemu-user-static rsync schedtool squashfs-tools ssh sudo 
+sudo apt install texinfo u-boot-tools unzip
+sudo apt install xsltproc yasm zip zlib1g-dev pip
+sudo apt-get install binfmt-support qemu-user-static --reinstall
+sudo pip install pyelftools
+sudo ln -s /usr/bin/python2 /usr/bin/python
+
+python2 <<有點怪，一般會失敗
+
+
+获取 SDK 源码¶
+Note
+
+1. SDK 不可放在共享目录下编译。
+2. 编译主机不可用 ROOT 账号登陆
+
+1. 点击下载 Linux SDK 源码，点击下载 release_sdk.sh 脚本，通常下载日期后缀最新文件。
+    Linux SDK 源码 ， 需要使用百度網盤，大約23GB，沒有加速情況下，需要連續下載2~3天才能完成
+ 
+2. 存放 tar.gz 包、md5sum 文件、release_sdk.sh 文件到编译主机同一级目录下。
+
+
+a733-linux-*.tar.gz
+a733-linux-*.md5sum
+release_sdk.sh
+3. 运行脚本还原 SDK 源码。
+
+
+chmod +x ./release_sdk.sh
+./release_sdk.sh
+
+完整编译¶
+Tip
+
+目前 A733 Linux SDK 源码只维护 Debian11 系统。
+
+1. 进入SDK源码根目录，执行如下命令配置编译目标。
+
+
+./build.sh lunch
+选择配置文件
+
+
+a733-linux$ ./build.sh lunch
+All available ic:
+   0. a733
+Choice [0]: 0
+All available board configurations:
+   0. BoardConfig-a733-kickpi-k10b-debian11.mk
+Choice [0]: 0
+2. 完整镜像编译。
+
+
+./build.sh 
+单独编译¶
+SDK 支持单独编译内核、模块、设备树、U-Boot、rootfs 等模块，无需每次全量编译。
+
+Tip
+
+单独编译前需先执行 ./build.sh lunch 选择板卡配置。
+
+命令	说明
+./build.sh kernel	编译内核
+./build.sh modules	编译内核模块
+./build.sh dtb	编译设备树
+./build.sh bootimg	编译 boot.img
+./build.sh brandy	编译 U-Boot
+./build.sh bootloader	同上
+./build.sh debian_rootfs	编译 Debian 根文件系统
+./build.sh rootfs	编译 rootfs（通用）
+./build.sh arisc	编译 ARISC 协处理器固件
+./build.sh menuconfig	内核配置菜单
+./build.sh uboot_menuconfig	U-Boot 配置菜单
+./build.sh pack	打包固件
+./build.sh pack_debug	打包 debug 固件
+./build.sh clean	清理编译产物
+./build.sh distclean	深度清理
+./build.sh all-lcd	遍历所有 LCD 配置依次编译（内核 + 打包）
